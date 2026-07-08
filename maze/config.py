@@ -148,11 +148,11 @@ def build_config(raw_data: dict[str, str]) -> Config:
         raise ConfigValidationError(f"Entry and Exit cannot be the same position")
     
     return Config(
-    width=width,
-    height=height,
-    entry=entry,
-    exit=exit,
-    output_file=output_file,
-    perfect=perfect,
-    seed=seed,
+        width=width,
+        height=height,
+        entry=entry,
+        exit=exit,
+        output_file=output_file,
+        perfect=perfect,
+        seed=seed,
     )
