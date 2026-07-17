@@ -1,4 +1,5 @@
 from maze.maze import Maze
+from maze.cell import Cell
 
 def convert_maze_to_grid(maze: Maze) -> list[list]:
     rows = 2 * maze.height + 1
@@ -25,3 +26,46 @@ def convert_maze_to_grid(maze: Maze) -> list[list]:
         grid[2 * exit_y + 1][2 * exit_x + 1] = 'E'
 
         return grid
+
+def get_hex_char(cell: Cell) -> str:
+    value = 0
+    if cell.walls["N"]:
+        value += 1
+    if cell.walls["E"]:
+        value += 2
+    if cell.walls["S"]:
+        value += 4
+    if cell.walls["W"]:
+        value += 8
+
+    return f"{value:X}"
+
+def generate_hex_content(maze: Maze) -> list[str]:
+    lines = []
+    for y in range(maze.height):
+        row_chars = []
+        for x in range(maze.width):
+            cell = maze.get_cell(x, y)
+            hex_char = get_hex_char(cell)
+            row_chars.append(hex_char)
+
+        lines.append("".join(row_chars))
+    return lines
+
+def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
+    if not path or len(path) < 2:
+        return ""
+
+    directions = []
+    for i in range(len(path) - 1):
+        current_r, current_c = path[i]
+        next_r, next_c = path[i + 1]
+        if next_r < current_r:
+            directions.append("N")
+        elif next_r > current_r:
+            directions.append("S")
+        elif next_c > current_c:
+            directions.append("E")
+        elif next_c < current_c:
+            directions.append("W")
+    return "".join(directions)
