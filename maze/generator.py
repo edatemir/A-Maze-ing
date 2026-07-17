@@ -4,6 +4,15 @@ from maze.maze import Maze
 import random
 
 class MazeGenerator:
+    PATTERN_42 = (
+        "1010111",
+        "1010001",
+        "1110111",
+        "0010100",
+        "0010111",
+    )
+    
+
     def __init__(self, config: Config)-> None:
         self.config = config
         self.maze = Maze(
@@ -13,11 +22,54 @@ class MazeGenerator:
             exit = config.exit,
         )
         self.rnd = random.Random(config.seed)
+
+
+    def pattern(self) -> None:
+        pattern_height = len(self.PATTERN_42)
+        pattern_width = len(self.PATTERN_42[0])
+
+        if (
+            self.config.width < pattern_width or self.config.height < pattern_height
+        ):
+            raise ValueError ("Maze is too small for 42 pattern")
         
+        start_x = (self.config.width - pattern_width) // 2
+        start_y = (self.config.height - pattern_height) // 2
+
+        entry_x, entry_y = self.config.entry
+        exit_x, exit_y = self.config.exit
+
+        for pattern_y, row in enumerate(self.PATTERN_42):
+            for pattern_x, value in enumerate(row):
+                if value != "1":
+                    continue
+                maze_x = start_x + pattern_x
+                maze_y = start_y + pattern_y
+
+                if (maze_x, maze_y) == (entry_x, entry_y):
+                    raise ValueError("Entry can't overlap the 42 pattern")
+                if (maze_x, maze_y) == (exit_x, exit_y):
+                     raise ValueError("Exit can't overlap the 42 pattern")
+                cell = self.maze.get_cell(maze_x, maze_y)
+                cell.blocked = True
+
+
+    def validate_connectivity(self) -> None:
+        for row in self.maze.grid:
+            for cell in row:
+                if not cell.blocked and not cell.visited:
+                    raise ValueError(
+                    "The 42 pattern disconnects part of the maze."
+                )
+
 
     def generator(self) -> Maze:
+        self.pattern()
+
         x, y = self.config.entry
         current = self.maze.get_cell(x, y)
+        if current.blocked:
+            raise ValueError("Entry cannot be inside the 42 pattern.")
         current.visited = True
         stack = []
         stack.append(current)
@@ -26,7 +78,7 @@ class MazeGenerator:
             neighbors = self.maze.get_neighbors(current)
             unvisited = []
             for neighbor in neighbors:
-                if not neighbor.visited:
+                if not neighbor.visited and not neighbor.blocked:
                     unvisited.append(neighbor)
             if not unvisited:
                 stack.pop()
@@ -34,7 +86,6 @@ class MazeGenerator:
                 next_choice = self.rnd.choice(unvisited)
                 self.maze.remove_wall(current, next_choice)
                 next_choice.visited = True
-                stack.append(next_choice) 
-
-
+                stack.append(next_choice)
+        self.validate_connectivity()
         return self.maze

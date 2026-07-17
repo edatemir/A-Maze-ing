@@ -16,5 +16,6 @@ class Cell:
     x: int
     y: int
     visited: bool = False
+    blocked: bool = False
     walls: dict[str, bool] = field(default_factory=walls)
 
