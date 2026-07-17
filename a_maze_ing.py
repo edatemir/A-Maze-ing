@@ -1,7 +1,8 @@
 from maze.config import parse_config
 from maze.generator import MazeGenerator
 from maze.exceptions import ConfigFileError
-
+from maze.output import convert_maze_to_grid
+from renderer.ui import render_box_maze
 
 def main() -> None:
     try:
@@ -18,14 +19,9 @@ def main() -> None:
         print(f"Entry: {maze.entry}")
         print(f"Exit: {maze.exit}")
 
-        print("\nMaze cells:")
-        for row in maze.grid:
-            for cell in row:
-                print(
-                    f"Cell ({cell.x}, {cell.y}) "
-                    f"visited={cell.visited} "
-                    f"walls={cell.walls}"
-                )
+        grid = convert_maze_to_grid(maze)
+        g
+        render_box_maze(grid)
 
     except ConfigFileError as error:
         print(error)
