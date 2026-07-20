@@ -70,10 +70,6 @@ def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
     return "".join(directions)
 
 def overlay_path_on_grid(grid, path):
-    """
-    BFS'ten gelen rotayı alır, hücre merkezlerine ve aralarındaki geçişlere
-    yol işareti ('.') koyarak matrisi günceller.
-    """
     if not path or len(path) < 2:
         return grid
         
@@ -81,18 +77,15 @@ def overlay_path_on_grid(grid, path):
         x1, y1 = path[i]
         x2, y2 = path[i + 1]
         
-        # 1. Şu anki hücrenin matristeki konumu
         gy1, gx1 = y1 * 2 + 1, x1 * 2 + 1
         if grid[gy1][gx1] not in ('S', 'E'):
             grid[gy1][gx1] = '.'
             
-        # 2. İki hücre arasındaki geçişin (açık kapının) konumu
         g_wall_y = y1 + y2 + 1
         g_wall_x = x1 + x2 + 1
         if grid[g_wall_y][g_wall_x] not in ('S', 'E'):
             grid[g_wall_y][g_wall_x] = '.'
             
-    # Son hücrenin merkezini işaretle (Eğer çıkış 'E' değilse)
     last_x, last_y = path[-1]
     gly, glx = last_y * 2 + 1, last_x * 2 + 1
     if grid[gly][glx] not in ('S', 'E'):
