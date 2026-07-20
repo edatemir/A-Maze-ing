@@ -1,3 +1,4 @@
+import sys
 from maze.config import parse_config
 from maze.generator import MazeGenerator
 from maze.exceptions import ConfigFileError
@@ -6,6 +7,8 @@ from renderer.ui import render_box_maze
 from maze.output import generate_hex_content
 
 def main() -> None:
+    if sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
     try:
         config = parse_config("config.txt")
 
