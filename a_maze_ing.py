@@ -24,13 +24,12 @@ def main() -> None:
         print(f"Size: {maze.width} x {maze.height}")
         print(f"Entry: {config.entry}")
         print(f"Exit: {config.exit}")
-        print("\n[+] BFS Algoritması Çözüyor...")
         path_coords = bfs_solve(maze, config)
         
         if path_coords:
             directions = convert_path_to_directions(path_coords)
-            print(f"[+] Çözüm bulundu! Yol uzunluğu: {len(path_coords)} adım.")
-            print(f"[+] Yönler: {directions}")
+            print(f"Yol uzunluğu: {len(path_coords)} adım.")
+            print(f"Yönler: {directions}")
         else:
             print("[-] Çıkışa ulaşan bir yol bulunamadı.")
             directions = ""
@@ -42,9 +41,7 @@ def main() -> None:
         print("\n--- LABİRENT ---")
         render_box_maze(grid)
         
-        print("\n--- HEX ÇIKTISI ---")
-        render_box_maze(grid)
-        
+        print("\n--- HEX ÇIKTISI ---") 
         hex_lines = generate_hex_content(maze)
         for line in hex_lines:
             print(line)
