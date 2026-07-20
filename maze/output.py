@@ -19,13 +19,13 @@ def convert_maze_to_grid(maze: Maze) -> list[list]:
             if not cell.walls["S"]:
                 grid[grid_y + 1][grid_x] = 0
         
-        entry_x, entry_y = maze.entry
-        grid[2 * entry_y + 1][2 * entry_x + 1]= 'S'
+    entry_x, entry_y = maze.entry
+    grid[2 * entry_y + 1][2 * entry_x + 1]= 'S'
 
-        exit_x, exit_y = maze.exit
-        grid[2 * exit_y + 1][2 * exit_x + 1] = 'E'
+    exit_x, exit_y = maze.exit
+    grid[2 * exit_y + 1][2 * exit_x + 1] = 'E'
 
-        return grid
+    return grid
 
 def get_hex_char(cell: Cell) -> str:
     value = 0
@@ -58,14 +58,11 @@ def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
 
     directions = []
     for i in range(len(path) - 1):
-        current_r, current_c = path[i]
-        next_r, next_c = path[i + 1]
-        if next_r < current_r:
-            directions.append("N")
-        elif next_r > current_r:
-            directions.append("S")
-        elif next_c > current_c:
-            directions.append("E")
-        elif next_c < current_c:
-            directions.append("W")
+        x1, y1 = path[i]
+        x2, y2 = path[i + 1]
+
+        if y2 < y1: directions.append("N")
+        elif y2 > y1: directions.append("S")
+        elif x2 > x1: directions.append("E")
+        elif x2 < x1: directions.append("W")
     return "".join(directions)

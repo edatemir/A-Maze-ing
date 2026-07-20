@@ -1,48 +1,43 @@
 from collections import deque
 
-def bfs_solve(maze):
-
-
-    start = None
-    end = None
-
-    rows = len(maze)
-    cols = len(maze[0])
-
-    for r in range(rows):
-        for c in range(cols):
-            if maze[r][c] == 'S':
-                start = (r, c)
-            elif maze[r][c] == 'E':
-                end = (r, c)
-    
-    if not start or not end:
-        return False
+def bfs_solve(maze, config):
+    start = config.entry
+    end = config.exit
 
     queue = deque([start])
     visited = set([start])
     parent_map = {}
 
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    directions = {
+        "N": (0, -1),
+        "E": (1, 0),
+        "S": (0, 1),
+        "W": (-1, 0)
+    }
+
     while queue:
-        current_r, current_c = queue.popleft()
-        if(current_r, current_c) == end:
+        curr_x, curr_y = queue.popleft()
+
+        if (curr_x, curr_y) == end:
             path = []
             curr = end
             while curr in parent_map:
                 path.append(curr)
-                 curr = parent_map[curr]
+                curr = parent_map[curr]
             path.append(start)
             path.reverse()
             return path
-
-        for dr, dc in directions:
-        nr, nc = current_r + dr, current_c + dc
-            if 0 <= nr < rows and 0 <= nc < cols:
-                if maze[nr][nc] in (0, 'E') and (nr, nc) not in visited:
-                    visited.add((nr, nc))
-                    parent_map[(nr, nc)] = (current_r, current_c) 
-                    queue.append((nr, nc))
+            
+        current_cell = maze.get_cell(curr_x, curr_y)
+        
+        for direction_name, (dx, dy) in directions.items():
+            if not current_cell.walls[direction_name]:
+                nx, ny = curr_x + dx, curr_y + dy
+                
+                if 0 <= nx < maze.width and 0 <= ny < maze.height:
+                    if (nx, ny) not in visited:
+                        visited.add((nx, ny))
+                        parent_map[(nx, ny)] = (curr_x, curr_y)
+                        queue.append((nx, ny))
+                        
     return False
-
- 
