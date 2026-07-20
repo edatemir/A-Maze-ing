@@ -12,6 +12,8 @@ def convert_maze_to_grid(maze: Maze) -> list[list]:
             grid_y = 2 * y + 1
             grid_x = 2 * x + 1
             grid[grid_y][grid_x] = 0
+            if getattr(cell, 'blocked', False) or getattr(cell, 'is_42', False):
+                grid[grid_y][grid_x] = 2
 
             if not cell.walls["E"]:
                 grid[grid_y][grid_x + 1] = 0
@@ -66,3 +68,34 @@ def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
         elif x2 > x1: directions.append("E")
         elif x2 < x1: directions.append("W")
     return "".join(directions)
+
+def overlay_path_on_grid(grid, path):
+    """
+    BFS'ten gelen rotayı alır, hücre merkezlerine ve aralarındaki geçişlere
+    yol işareti ('.') koyarak matrisi günceller.
+    """
+    if not path or len(path) < 2:
+        return grid
+        
+    for i in range(len(path) - 1):
+        x1, y1 = path[i]
+        x2, y2 = path[i + 1]
+        
+        # 1. Şu anki hücrenin matristeki konumu
+        gy1, gx1 = y1 * 2 + 1, x1 * 2 + 1
+        if grid[gy1][gx1] not in ('S', 'E'):
+            grid[gy1][gx1] = '.'
+            
+        # 2. İki hücre arasındaki geçişin (açık kapının) konumu
+        g_wall_y = y1 + y2 + 1
+        g_wall_x = x1 + x2 + 1
+        if grid[g_wall_y][g_wall_x] not in ('S', 'E'):
+            grid[g_wall_y][g_wall_x] = '.'
+            
+    # Son hücrenin merkezini işaretle (Eğer çıkış 'E' değilse)
+    last_x, last_y = path[-1]
+    gly, glx = last_y * 2 + 1, last_x * 2 + 1
+    if grid[gly][glx] not in ('S', 'E'):
+        grid[gly][glx] = '.'
+        
+    return grid

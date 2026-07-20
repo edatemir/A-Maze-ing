@@ -1,8 +1,8 @@
 RESET = "\033[0m"
-WALL_COLOR = "\033[96m"
+WALL_COLOR = "\033[38;2;168;228;160m"
 ENTRY_COLOR = "\033[1;92m"
 EXIT_COLOR = "\033[1;91m"
-PATH_COLOR = "\033[93m"
+PATH_COLOR =  "\033[38;2;219;112;147m"
 LOGO_COLOR = "\033[1;95m"  # Parlak Mor
 
 BOX_CHARS = {
@@ -43,9 +43,13 @@ def get_wall_mask(maze, row, col):
 def render_box_maze(maze):
     for r, row in enumerate(maze):
         for c, cell in enumerate(row):
-            if cell == 1:
+            
+            # Duvar (1) ve 42 Desenini (2) aynı mantıkla ve aynı renkle (WALL_COLOR) çiziyoruz
+            if cell in (1, 2):
                 mask = get_wall_mask(maze, r, c)
                 box_char = BOX_CHARS[mask]
+                
+                # Doğuya (sağa) bağlantı var mı?
                 if c < len(maze[0]) - 1 and maze[r][c + 1] in (1, 2):
                     connect_east = "━"
                 else:
@@ -53,42 +57,13 @@ def render_box_maze(maze):
 
                 print(f"{WALL_COLOR}{box_char}{connect_east}{RESET}", end="")
             
-            elif cell == 2:
-                mask = get_wall_mask(maze, r, c)
-                box_char = BOX_CHARS[mask]
-                
-                if c < len(maze[0]) - 1 and maze[r][c + 1] in (1, 2):
-                    connect_east = "━"
-                else:
-                    connect_east = " "
-
-                print(f"{LOGO_COLOR}{box_char}{connect_east}{RESET}", end="")
-
             elif cell == 'S':
                 print(f"{ENTRY_COLOR}S {RESET}", end="")
             elif cell == 'E':
                 print(f"{EXIT_COLOR}E {RESET}", end="")
-            elif cell == '*':
+            elif cell == '.':
                 print(f"{PATH_COLOR}• {RESET}", end="")
             else:
                 print("  ", end="")
 
         print()
-
-if __name__ == "__main__":
-    mock_maze = [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 'S', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'E', 1],
-        [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 1, 2, 0, 0, 2, 0, 2, 2, 2, 2, 1, 0, 1],
-        [1, 0, 1, 0, 1, 2, 0, 0, 2, 0, 0, 0, 0, 2, 1, 0, 1],
-        [1, 0, 1, 0, 1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 0, 0, 2, 0, 2, 2, 2, 2, 1, 0, 1],
-        [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ]
-    
-    print("\n--- KUTU ÇİZİM TESTİ ---\n")
-    render_box_maze(mock_maze)
