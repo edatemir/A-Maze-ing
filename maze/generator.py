@@ -32,7 +32,7 @@ class MazeGenerator:
         if (
             self.config.width < pattern_width or self.config.height < pattern_height
         ):
-            raise ValueError ("Maze is too small for 42 pattern")
+            raise ValueError("Maze is too small for 42 pattern")
         
         start_x = (self.config.width - pattern_width) // 2
         start_y = (self.config.height - pattern_height) // 2
@@ -50,7 +50,7 @@ class MazeGenerator:
                 if (maze_x, maze_y) == (entry_x, entry_y):
                     raise ValueError("Entry can't overlap the 42 pattern")
                 if (maze_x, maze_y) == (exit_x, exit_y):
-                     raise ValueError("Exit can't overlap the 42 pattern")
+                    raise ValueError("Exit can't overlap the 42 pattern")
                 cell = self.maze.get_cell(maze_x, maze_y)
                 cell.blocked = True
 
@@ -59,9 +59,7 @@ class MazeGenerator:
         for row in self.maze.grid:
             for cell in row:
                 if not cell.blocked and not cell.visited:
-                    raise ValueError(
-                    "The 42 pattern disconnects part of the maze."
-                )
+                    raise ValueError("The 42 pattern disconnects part of the maze.")
 
 
     def loop(self) -> None:
