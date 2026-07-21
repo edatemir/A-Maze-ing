@@ -3,7 +3,7 @@ WALL_COLOR = "\033[38;2;168;228;160m"
 ENTRY_COLOR = "\033[1;92m"
 EXIT_COLOR = "\033[1;91m"
 PATH_COLOR =  "\033[38;2;219;112;147m"
-LOGO_COLOR = "\033[1;95m"  # Parlak Mor
+LOGO_COLOR = "\033[1;95m"
 
 BOX_CHARS = {
     0: "■",   # Tek başına duran duvar
@@ -40,22 +40,19 @@ def get_wall_mask(maze, row, col):
     
     return mask
 
-def render_box_maze(maze):
+def render_box_maze(maze, current_wall_color=WALL_COLOR):
     for r, row in enumerate(maze):
         for c, cell in enumerate(row):
-            
-            # Duvar (1) ve 42 Desenini (2) aynı mantıkla ve aynı renkle (WALL_COLOR) çiziyoruz
             if cell in (1, 2):
                 mask = get_wall_mask(maze, r, c)
                 box_char = BOX_CHARS[mask]
-                
-                # Doğuya (sağa) bağlantı var mı?
+
                 if c < len(maze[0]) - 1 and maze[r][c + 1] in (1, 2):
                     connect_east = "━"
                 else:
                     connect_east = " "
 
-                print(f"{WALL_COLOR}{box_char}{connect_east}{RESET}", end="")
+                print(f"{current_wall_color}{box_char}{connect_east}{RESET}", end="")
             
             elif cell == 'S':
                 print(f"{ENTRY_COLOR}S {RESET}", end="")
