@@ -70,5 +70,18 @@ class Maze:
         elif cell2.x == cell1.x and cell2.y == cell1.y - 1:
             cell1.walls["N"] = False
             cell2.walls["S"] = False
-        #else:
-            #raise ValueError("Cells are not adjacent.")
+        else:
+            raise ValueError("Cells are not adjacent.")
+
+
+    def has_wall(self, cell1: Cell, cell2: Cell) -> bool:
+        if cell2.x == cell1.x + 1 and cell2.y == cell1.y:
+            return cell1.walls["E"]
+        elif cell2.x == cell1.x - 1 and cell2.y == cell1.y:
+            return cell1.walls["W"]
+        elif cell2.x == cell1.x and cell2.y == cell1.y + 1:
+            return cell1.walls["S"]
+        elif cell2.x == cell1.x and cell2.y == cell1.y - 1:
+            return cell1.walls["N"]
+        else:
+            raise ValueError("Cells are not adjacent.")

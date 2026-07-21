@@ -1,6 +1,7 @@
 
 from maze.config import Config
 from maze.maze import Maze
+from maze.cell import Cell
 import random
 
 class MazeGenerator:
@@ -63,6 +64,35 @@ class MazeGenerator:
                 )
 
 
+    def loop(self) -> None:
+        loops = 0
+        candidates= []
+
+        for row in self.maze.grid:
+            for cell in row:
+                if cell.blocked:
+                    continue
+                for neighbor in self.maze.get_neighbors(cell):
+                    if neighbor.blocked:
+                        continue
+                    if not self.maze.has_wall(cell, neighbor):
+                        continue
+                    group = tuple(sorted((cell, neighbor), key=lambda current: (current.y, current.x)))
+                    if group not in candidates:
+                        candidates.append(group)
+        self.rnd.shuffle(candidates)
+        for cell, neighbor in candidates:
+            if loops >= 2:
+                break
+            if not self.maze.has_wall(cell, neighbor):
+                continue
+            self.maze.remove_wall(cell, neighbor)
+            loops += 1
+        
+        if loops < 2:
+            raise ValueError("Unable to create at least two loops in the maze.")
+
+
     def generator(self) -> Maze:
         self.pattern()
 
@@ -88,4 +118,6 @@ class MazeGenerator:
                 next_choice.visited = True
                 stack.append(next_choice)
         self.validate_connectivity()
+        if not self.config.perfect:
+            self.loop()
         return self.maze
