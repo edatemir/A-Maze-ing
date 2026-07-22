@@ -8,6 +8,7 @@ from maze.exceptions import (
     ConfigMissingKeyError,
     ConfigValueError,
     ConfigValidationError,
+    MazeGenerationError,
 )
 from maze.output import (
     convert_maze_to_grid,
@@ -60,8 +61,6 @@ def main() -> None:
         print(error)
         return
 
-    print("[+] Config loaded successfully.")
-
     show_path = True
     colors = [
         "\033[38;2;168;228;160m",
@@ -72,8 +71,12 @@ def main() -> None:
     ]
     color_idx = 0
 
-    generator = MazeGenerator(config)
-    maze = generator.generator()
+    try:
+        generator = MazeGenerator(config)
+        maze = generator.generator()
+    except MazeGenerationError as error:
+        print(error)
+        return
 
     path_coords = bfs_solve(maze, config)
     directions = (
@@ -95,8 +98,6 @@ def main() -> None:
         if show_path and path_coords:
             grid = overlay_path_on_grid(grid, path_coords)
 
-        print("\n" * 2)
-        print("--- MAZE ---")
         render_box_maze(grid, current_wall_color=colors[color_idx])
 
         print("\n=== A-Maze-ing ===")
@@ -113,8 +114,12 @@ def main() -> None:
         if choice == "1":
             config.seed = int(time.time() * 1000) % 10000
 
-            generator = MazeGenerator(config)
-            maze = generator.generator()
+            try:
+                generator = MazeGenerator(config)
+                maze = generator.generator()
+            except MazeGenerationError as error:
+                print(error)
+                return
 
             path_coords = bfs_solve(maze, config)
             directions = (

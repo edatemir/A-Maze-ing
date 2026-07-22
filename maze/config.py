@@ -69,10 +69,14 @@ def key(raw_data: dict[str, str]) -> None:
         "EXIT",
         "OUTPUT_FILE",
         "PERFECT",
-                ]
+    ]
+    allowed_keys = set(required_keys) | {"SEED"}
     for required_key in required_keys:
         if required_key not in raw_data:
             raise ConfigMissingKeyError(f"{required_key} config key missing")
+    for config_key in raw_data:
+        if config_key not in allowed_keys:
+            raise ConfigSyntaxError(f"Unknown config key '{config_key}'")
 
 
 def build_config(raw_data: dict[str, str]) -> Config:
@@ -118,10 +122,10 @@ def build_config(raw_data: dict[str, str]) -> Config:
 
     output_file = raw_data["OUTPUT_FILE"]
 
-    perfect_value = raw_data["PERFECT"]
-    if perfect_value == "True":
+    perfect_value = raw_data["PERFECT"].lower()
+    if perfect_value == "true":
         perfect = True
-    elif perfect_value == "False":
+    elif perfect_value == "false":
         perfect = False
     else:
         raise ConfigValueError(f"Perfect must be bool")

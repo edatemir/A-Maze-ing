@@ -2,6 +2,7 @@
 from maze.config import Config
 from maze.maze import Maze
 from maze.cell import Cell
+from maze.exceptions import MazeGenerationError
 import random
 
 class MazeGenerator:
@@ -32,7 +33,8 @@ class MazeGenerator:
         if (
             self.config.width < pattern_width or self.config.height < pattern_height
         ):
-            raise ValueError("Maze is too small for 42 pattern")
+            print("Maze is too small for 42 pattern")
+            return
         
         start_x = (self.config.width - pattern_width) // 2
         start_y = (self.config.height - pattern_height) // 2
@@ -48,9 +50,9 @@ class MazeGenerator:
                 maze_y = start_y + pattern_y
 
                 if (maze_x, maze_y) == (entry_x, entry_y):
-                    raise ValueError("Entry can't overlap the 42 pattern")
+                    raise MazeGenerationError("Entry can't overlap the 42 pattern")
                 if (maze_x, maze_y) == (exit_x, exit_y):
-                    raise ValueError("Exit can't overlap the 42 pattern")
+                    raise MazeGenerationError("Exit can't overlap the 42 pattern")
                 cell = self.maze.get_cell(maze_x, maze_y)
                 cell.blocked = True
 
@@ -59,7 +61,7 @@ class MazeGenerator:
         for row in self.maze.grid:
             for cell in row:
                 if not cell.blocked and not cell.visited:
-                    raise ValueError("The 42 pattern disconnects part of the maze.")
+                    raise MazeGenerationError("The 42 pattern disconnects part of the maze.")
 
 
     def loop(self) -> None:
@@ -88,7 +90,7 @@ class MazeGenerator:
             loops += 1
         
         if loops < 2:
-            raise ValueError("Unable to create at least two loops in the maze.")
+            raise MazeGenerationError("Unable to create at least two loops in the maze.")
 
 
     def generator(self) -> Maze:
@@ -97,7 +99,7 @@ class MazeGenerator:
         x, y = self.config.entry
         current = self.maze.get_cell(x, y)
         if current.blocked:
-            raise ValueError("Entry cannot be inside the 42 pattern.")
+            raise MazeGenerationError("Entry cannot be inside the 42 pattern.")
         current.visited = True
         stack = []
         stack.append(current)

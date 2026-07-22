@@ -16,3 +16,9 @@ class ConfigValueError(ConfigError):
 
 class ConfigValidationError(ConfigError):
     pass
+
+class MazeError(Exception):
+    pass
+
+class MazeGenerationError(MazeError):
+    pass
