@@ -64,31 +64,49 @@ class MazeGenerator:
                     raise MazeGenerationError("The 42 pattern disconnects part of the maze.")
 
 
+    def dead_end(self, cell: Cell) -> bool:
+        open_path = 0
+        for neighbor in self.maze.get_neighbors(cell):
+            if neighbor.blocked:
+                continue
+            if not self.maze.has_wall(cell, neighbor):
+                open_path += 1
+        return open_path == 1
+
+
     def loop(self) -> None:
         loops = 0
-        candidates= []
-
-        for row in self.maze.grid:
-            for cell in row:
-                if cell.blocked:
-                    continue
+        max_dead_end = 2
+        while True:
+            dead_end = []
+            for row in self.maze.grid:
+                for cell in row:
+                    if cell.blocked:
+                        continue
+                    if self.dead_end(cell):
+                        dead_end.append(cell)
+            if len(dead_end) <= max_dead_end and loops >= 2:
+                break
+            self.rnd.shuffle(dead_end)
+            wall_removed = False
+            for cell in dead_end:
+                candidates= []
                 for neighbor in self.maze.get_neighbors(cell):
                     if neighbor.blocked:
                         continue
                     if not self.maze.has_wall(cell, neighbor):
                         continue
-                    group = tuple(sorted((cell, neighbor), key=lambda current: (current.y, current.x)))
-                    if group not in candidates:
-                        candidates.append(group)
-        self.rnd.shuffle(candidates)
-        for cell, neighbor in candidates:
-            if loops >= 2:
+                    candidates.append(neighbor)
+                self.rnd.shuffle(candidates)
+                for neighbor in candidates:
+                    self.maze.remove_wall(cell, neighbor)
+                    loops += 1
+                    wall_removed = True
+                    break
+                if wall_removed:
+                    break
+            if not wall_removed:
                 break
-            if not self.maze.has_wall(cell, neighbor):
-                continue
-            self.maze.remove_wall(cell, neighbor)
-            loops += 1
-        
         if loops < 2:
             raise MazeGenerationError("Unable to create at least two loops in the maze.")
 

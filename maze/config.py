@@ -9,7 +9,7 @@ from maze.exceptions import (
 
 from dataclasses import dataclass
 
-@dataclass #frozen=True config yapılmalı mı
+@dataclass
 class Config:
     width: int
     height: int
