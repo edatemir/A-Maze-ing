@@ -39,6 +39,22 @@ class MazeGenerator:
         start_x = (self.config.width - pattern_width) // 2
         start_y = (self.config.height - pattern_height) // 2
 
+        center_x = self.config.width // 2
+        center_y = self.config.height // 2
+
+        pattern_center_x = center_x - start_x
+        pattern_center_y = center_y - start_y
+
+        if (
+            0 <= pattern_center_x < pattern_width
+            and 0 <= pattern_center_y < pattern_height
+            and self.PATTERN_42[pattern_center_y][pattern_center_x] == "1"
+        ):
+            if start_x + pattern_width < self.config.width:
+                start_x += 1
+            elif start_x > 0:
+                start_x -= 1
+
         entry_x, entry_y = self.config.entry
         exit_x, exit_y = self.config.exit
 
@@ -50,11 +66,21 @@ class MazeGenerator:
                 maze_y = start_y + pattern_y
 
                 if (maze_x, maze_y) == (entry_x, entry_y):
-                    raise MazeGenerationError("Entry can't overlap the 42 pattern")
+                    print("42 pattern skipped because it overlaps the entry")
+                    return
                 if (maze_x, maze_y) == (exit_x, exit_y):
-                    raise MazeGenerationError("Exit can't overlap the 42 pattern")
-                cell = self.maze.get_cell(maze_x, maze_y)
-                cell.blocked = True
+                    print("42 pattern skipped because it overlaps the exit")
+                    return
+
+        for pattern_y, row in enumerate(self.PATTERN_42):
+                for pattern_x, value in enumerate(row):
+                    if value != "1":
+                        continue
+                    maze_x = start_x + pattern_x
+                    maze_y = start_y + pattern_y
+
+                    cell = self.maze.get_cell(maze_x, maze_y)
+                    cell.blocked = True
 
 
     def validate_connectivity(self) -> None:
