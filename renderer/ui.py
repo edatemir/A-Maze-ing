@@ -3,7 +3,6 @@ WALL_COLOR = "\033[38;2;168;228;160m"
 ENTRY_COLOR = "\033[1;92m"
 EXIT_COLOR = "\033[1;91m"
 PATH_COLOR =  "\033[38;2;219;112;147m"
-LOGO_COLOR = "\033[1;95m"
 
 BOX_CHARS = {
     0: "■",   # Tek başına duran duvar
