@@ -12,7 +12,7 @@ def convert_maze_to_grid(maze: Maze) -> list[list]:
             grid_y = 2 * y + 1
             grid_x = 2 * x + 1
             grid[grid_y][grid_x] = 0
-            if getattr(cell, 'blocked', False) or getattr(cell, 'is_42', False):
+            if cell.blocked:
                 grid[grid_y][grid_x] = 2
 
             if not cell.walls["E"]:
