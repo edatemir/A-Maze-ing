@@ -2,7 +2,13 @@ import sys
 import time
 from maze.config import parse_config
 from maze.generator import MazeGenerator
-from maze.exceptions import ConfigFileError
+from maze.exceptions import (
+    ConfigFileError,
+    ConfigSyntaxError,
+    ConfigMissingKeyError,
+    ConfigValueError,
+    ConfigValidationError,
+)
 from maze.output import (
     convert_maze_to_grid,
     generate_hex_content,
@@ -44,91 +50,104 @@ def main() -> None:
 
     try:
         config = parse_config(config_file)
-        print("[+] Config loaded successfully.")
-
-        show_path = True
-        colors = [
-            "\033[38;2;168;228;160m",
-            "\033[1;34m",
-            "\033[1;33m",
-            "\033[1;31m",
-            "\033[1;36m",
-        ]
-        color_idx = 0
-
-        generator = MazeGenerator(config)
-        maze = generator.generator()
-
-        path_coords = bfs_solve(maze, config)
-        directions = (
-            convert_path_to_directions(path_coords) if path_coords else ""
-        )
-
-        hex_lines = generate_hex_content(maze)
-        save_maze_to_file(
-            config.output_file,
-            hex_lines,
-            config.entry,
-            config.exit,
-            directions,
-        )
-
-        while True:
-            grid = convert_maze_to_grid(maze)
-
-            if show_path and path_coords:
-                grid = overlay_path_on_grid(grid, path_coords)
-
-            print("\n" * 2)
-            print("--- MAZE ---")
-            render_box_maze(grid, current_wall_color=colors[color_idx])
-
-            print("\n=== A-Maze-ing ===")
-            print("1. Generate a new maze")
-            print(
-                f"2. Show/Hide the shortest path (Currently: {'Visible' if show_path else 'Hidden'})"
-            )
-            print("3. Change wall color")
-            print("4. Exit")
-
-            choice = input("Your choice (1-4): ").strip()
-
-            if choice == "1":
-                config.seed = int(time.time() * 1000) % 10000
-
-                generator = MazeGenerator(config)
-                maze = generator.generator()
-
-                path_coords = bfs_solve(maze, config)
-                directions = (
-                    convert_path_to_directions(path_coords)
-                    if path_coords
-                    else ""
-                )
-
-                hex_lines = generate_hex_content(maze)
-                save_maze_to_file(
-                    config.output_file,
-                    hex_lines,
-                    config.entry,
-                    config.exit,
-                    directions,
-                )
-
-                print(
-                    f"\n[+] New maze generated and saved to '{config.output_file}'!"
-                )
-            elif choice == "2":
-                show_path = not show_path
-            elif choice == "3":
-                color_idx = (color_idx + 1) % len(colors)
-            elif choice == "4":
-                print("Exiting...")
-                break
-            else:
-                print("Invalid choice. Please enter a number between 1 and 4.")
-    except ConfigFileError as error:
+    except (
+        ConfigFileError,
+        ConfigSyntaxError,
+        ConfigMissingKeyError,
+        ConfigValueError,
+        ConfigValidationError,
+    ) as error:
         print(error)
+        return
+
+    print("[+] Config loaded successfully.")
+
+    show_path = True
+    colors = [
+        "\033[38;2;168;228;160m",
+        "\033[1;34m",
+        "\033[1;33m",
+        "\033[1;31m",
+        "\033[1;36m",
+    ]
+    color_idx = 0
+
+    generator = MazeGenerator(config)
+    maze = generator.generator()
+
+    path_coords = bfs_solve(maze, config)
+    directions = (
+        convert_path_to_directions(path_coords) if path_coords else ""
+    )
+
+    hex_lines = generate_hex_content(maze)
+    save_maze_to_file(
+        config.output_file,
+        hex_lines,
+        config.entry,
+        config.exit,
+        directions,
+    )
+
+    while True:
+        grid = convert_maze_to_grid(maze)
+
+        if show_path and path_coords:
+            grid = overlay_path_on_grid(grid, path_coords)
+
+        print("\n" * 2)
+        print("--- MAZE ---")
+        render_box_maze(grid, current_wall_color=colors[color_idx])
+
+        print("\n=== A-Maze-ing ===")
+        print("1. Generate a new maze")
+        print(
+            f"2. Show/Hide the shortest path "
+            f"(Currently: {'Visible' if show_path else 'Hidden'})"
+        )
+        print("3. Change wall color")
+        print("4. Exit")
+
+        choice = input("Your choice (1-4): ").strip()
+
+        if choice == "1":
+            config.seed = int(time.time() * 1000) % 10000
+
+            generator = MazeGenerator(config)
+            maze = generator.generator()
+
+            path_coords = bfs_solve(maze, config)
+            directions = (
+                convert_path_to_directions(path_coords)
+                if path_coords
+                else ""
+            )
+
+            hex_lines = generate_hex_content(maze)
+            save_maze_to_file(
+                config.output_file,
+                hex_lines,
+                config.entry,
+                config.exit,
+                directions,
+            )
+
+            print(
+                f"\n[+] New maze generated and saved to "
+                f"'{config.output_file}'!"
+            )
+        elif choice == "2":
+            show_path = not show_path
+        elif choice == "3":
+            color_idx = (color_idx + 1) % len(colors)
+        elif choice == "4":
+            print("Exiting...")
+            break
+        else:
+            print(
+                "Invalid choice. Please enter a number between 1 and 4."
+            )
+
 
 if __name__ == "__main__":
     main()
