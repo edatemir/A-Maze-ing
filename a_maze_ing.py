@@ -46,7 +46,7 @@ def main() -> None:
     """Parse the config, generate and solve a maze, save it, then run the
     interactive menu."""
     if sys.stdout.encoding.lower() != "utf-8":
-        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
 
     if len(sys.argv) != 2:
         print("Usage: python3 a_maze_ing.py <config_file>")

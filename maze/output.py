@@ -2,13 +2,15 @@ from maze.maze import Maze
 from maze.cell import Cell
 
 
-def convert_maze_to_grid(maze: Maze) -> list[list]:
+def convert_maze_to_grid(maze: Maze) -> list[list[int | str]]:
     """Build the character grid used for rendering: walls, blocked cells,
       entry ('S') and exit ('E')."""
     rows = 2 * maze.height + 1
     cols = 2 * maze.width + 1
 
-    grid = [[1 for _ in range(cols)] for _ in range(rows)]
+    grid: list[list[int | str]] = [
+            [1 for _ in range(cols)] for _ in range(rows)
+        ]
     for y in range(maze.height):
         for x in range(maze.width):
             cell = maze.get_cell(x, y)
@@ -86,7 +88,9 @@ def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
     return "".join(directions)
 
 
-def overlay_path_on_grid(grid, path):
+def overlay_path_on_grid(
+    grid: list[list[int | str]], path: list[tuple[int, int]]
+) -> list[list[int | str]]:
     """Mark the solver's path cells and the walls it crosses on
       the render grid with '.'."""
     if not path or len(path) < 2:

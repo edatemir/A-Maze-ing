@@ -160,7 +160,7 @@ def build_config(raw_data: dict[str, str]) -> Config:
 
     if entry == exit:
         raise ConfigValidationError(
-            "Entry and Exit cannot be the sameposition"
+            "Entry and Exit cannot be the same position"
             )
 
     return Config(

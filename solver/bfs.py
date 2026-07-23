@@ -1,7 +1,12 @@
 from collections import deque
+from maze.maze import Maze
+from maze.config import Config
+from typing import Literal
 
 
-def bfs_solve(maze, config):
+def bfs_solve(
+    maze: Maze, config: Config
+) -> list[tuple[int, int]] | Literal[False]:
     """Find the shortest entry-to-exit path via BFS over open passages.
     Returns the path as a list of (x, y) coordinates, or False if the
       exit is unreachable."""
@@ -10,7 +15,7 @@ def bfs_solve(maze, config):
 
     queue = deque([start])
     visited = set([start])
-    parent_map = {}
+    parent_map: dict[tuple[int, int], tuple[int, int]] = {}
 
     directions = {
         "N": (0, -1),
