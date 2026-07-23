@@ -46,7 +46,7 @@ class Maze:
         x = cell.x
         y = cell.y
 
-        nx = x             #dongu mantigi yapilabilir   
+        nx = x
         ny = y - 1
         if self.inside(nx, ny):
             neighbors.append(self.get_cell(nx, ny))

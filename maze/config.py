@@ -34,13 +34,21 @@ def read_file(path: str) -> list[str]:
     """Read the config file's lines; raise ConfigFileError
       if it's missing or unreadable."""
     try:
-        with open(path) as file: #encoding eklenmeli mi
+        with open(path, encoding="utf-8") as file:
             lines = file.read().splitlines()
         return lines
     except FileNotFoundError as error:
         raise ConfigFileError(f"Config file '{path}' not found.") from error
     except PermissionError as error:
         raise ConfigFileError(f"Unable to read '{path}' file.") from error
+    except UnicodeDecodeError as error:
+        raise ConfigFileError(
+            f"Config file '{path}' is not valid UTF-8."
+        ) from error
+    except OSError as error:
+        raise ConfigFileError(
+            f"Unable to read config file '{path}'."
+        ) from error
 
 
 def parse_line(lines: list[str]) -> dict[str, str]:

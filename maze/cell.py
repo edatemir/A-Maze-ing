@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 
 
-def walls() -> dict[str, bool]:      #mutable default calis
+def walls() -> dict[str, bool]:
     """Default value for Cell.walls: all four sides start closed."""
     walls = {
         "N": True,

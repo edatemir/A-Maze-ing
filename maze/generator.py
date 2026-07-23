@@ -1,9 +1,9 @@
 
+import random
 from maze.config import Config
 from maze.maze import Maze
 from maze.cell import Cell
 from maze.exceptions import MazeGenerationError
-import random
 
 
 class MazeGenerator:
