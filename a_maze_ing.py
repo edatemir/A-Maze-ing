@@ -27,6 +27,9 @@ def save_maze_to_file(
     exit: tuple[int, int],
     directions: str,
 ) -> None:
+    """Write the hex-encoded maze, entry/exit coordinates and solution path to filename.
+    Prints an error instead of raising if the file can't be written.
+    """
     try:
         with open(filename, "w", encoding="utf-8") as f:
             for line in hex_lines:
@@ -40,7 +43,8 @@ def save_maze_to_file(
 
 
 def main() -> None:
-    if sys.stdout.encoding.lower() != "utf-8":
+    """Parse the config, generate and solve a maze, save it, then run the interactive menu."""
+        if sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
 
     if len(sys.argv) != 2:

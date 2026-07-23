@@ -197,6 +197,50 @@ fixes (BFS edge cases, grid carving, path-direction conversion) →
 interactive menu and loop mode for non-perfect mazes → packaging, Makefile
 and documentation.
 
+### Planning
+
+The initial plan was to fix the module boundaries (`Config`, `Maze`/`Cell`,
+`MazeGenerator`) first, so both of us could build on the same data model
+and work in parallel from day one: one person on the generation engine, the
+other on the solver and terminal UI. That part held up well. What shifted
+along the way: the interactive menu and the loop-carving step for
+`PERFECT=False` boards were originally meant to land early but were pushed
+back until the DFS carving and the "42" pattern placement were fully
+stable, since the loop logic depends on a correct dead-end count. Packaging
+the `maze` package for pip and writing this documentation were always
+planned as the last step, once the public API (`MazeGenerator`,
+`parse_config`) had stopped changing.
+
+### What worked well / what could be improved
+
+- **Worked well:** splitting the code into independent modules
+  (`maze.config`, `maze.maze`, `maze.generator`, `maze.output`,
+  `solver.bfs`, `renderer.ui`) let both of us work in parallel with very
+  few merge conflicts. Choosing an explicit stack over recursion for the
+  DFS carving avoided any recursion-limit issues on large mazes. Using the
+  subject's `maze_analyzer.py` early caught wall-coherence and dead-end
+  bugs before they became hard to track down.
+- **Could be improved:** `flake8`/`mypy` compliance was treated as a
+  final cleanup step instead of being enforced from the first commit,
+  which meant fixing a batch of style and typing issues late; docstrings
+  and type hints on some helper functions (`bfs_solve`,
+  `overlay_path_on_grid`, `get_wall_mask`) were added after the fact rather
+  than as each function was written. The packaged `mazegen-*.whl`/`.tar.gz`
+  at the repository root also drifted out of sync with `maze/`'s source
+  during development; rebuilding it is now a dedicated `make package` step
+  that should be run on every change to `maze/`, ideally before every
+  commit rather than only before submission.
+
+### Tools
+
+- **Python 3.10+**, `git` branches and pull requests for parallel work.
+- **flake8** and **mypy** (wired into `make lint` / `make lint-strict`)
+  for style and static type checking.
+- **`python -m build`** / `pip` to build and install the `mazegen` package.
+- The subject-provided **`maze_analyzer.py`** to verify wall coherence and
+  that each config produces the correct mode (`PERFECT` vs. Pac-Man
+  board).
+
 ## 📚 Resources
 
 - [Maze generation algorithm — Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm) — overview of maze-carving algorithms, including recursive backtracking.

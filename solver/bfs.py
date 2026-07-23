@@ -1,6 +1,8 @@
 from collections import deque
 
 def bfs_solve(maze, config):
+    """Find the shortest entry-to-exit path via BFS over open passages.
+    Returns the path as a list of (x, y) coordinates, or False if the exit is unreachable."""
     start = config.entry
     end = config.exit
 

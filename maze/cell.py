@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 
 def walls() -> dict[str, bool]:      #mutable default calis
+    """Default value for Cell.walls: all four sides start closed."""
     walls = {
         "N": True,
         "E": True,
@@ -13,6 +14,7 @@ def walls() -> dict[str, bool]:      #mutable default calis
 
 @dataclass
 class Cell:
+    """A single maze cell: its position, visited/blocked state, and walls on each side."""
     x: int
     y: int
     visited: bool = False
