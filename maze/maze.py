@@ -2,7 +2,9 @@
 from maze.cell import Cell
 
 class Maze:
+    """The maze grid of cells, plus its entry and exit positions."""
     def __init__(self, width: int, height: int, entry: tuple[int, int], exit: tuple[int, int]) -> None:
+        """Build a grid of the given size, made of cells with all walls closed."""
         self.width = width
         self.height = height
         self.entry = entry
@@ -11,6 +13,7 @@ class Maze:
 
 
     def _create_grid(self) -> list[list[Cell]]:
+        """Create a width x height grid of default Cell instances."""
         grid = []
         for y in range(self.height):
             row = []
@@ -21,17 +24,20 @@ class Maze:
     
 
     def inside(self, x: int, y: int) -> bool:
+         """Return whether (x, y) lies within the maze bounds."""
         if x >= 0 and x < self.width and y >= 0 and y < self.height:
             return True
         return False
     
 
     def get_cell(self, x: int, y: int) -> Cell:
+        """Return the cell at (x, y)."""
         cell = self.grid[y][x]
         return cell
     
 
     def get_neighbors(self, cell: Cell) -> list[Cell]:
+        """Return the in-bounds neighbours (N/E/S/W) of a cell."""
         neighbors = []
         x = cell.x
         y = cell.y
@@ -58,6 +64,7 @@ class Maze:
         return neighbors
 
     def remove_wall(self, cell1: Cell, cell2: Cell) -> None:
+        """Open the shared wall between two adjacent cells, on both sides."""
         if cell2.x == cell1.x + 1 and cell2.y == cell1.y:
             cell1.walls["E"] = False
             cell2.walls["W"] = False
@@ -75,6 +82,7 @@ class Maze:
 
 
     def has_wall(self, cell1: Cell, cell2: Cell) -> bool:
+        """Return whether a wall still stands between two adjacent cells."""
         if cell2.x == cell1.x + 1 and cell2.y == cell1.y:
             return cell1.walls["E"]
         elif cell2.x == cell1.x - 1 and cell2.y == cell1.y:

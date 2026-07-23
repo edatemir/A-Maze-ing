@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
+     """All settings parsed from the config file, needed to generate a maze."""
     width: int
     height: int
     entry: tuple[int, int]
@@ -21,6 +22,7 @@ class Config:
 
 
 def parse_config(path: str) -> Config:
+    """Read, validate and return the config file as a Config object."""
     lines = read_file(path)
     raw_data = parse_line(lines)
     key(raw_data)
@@ -28,6 +30,7 @@ def parse_config(path: str) -> Config:
 
 
 def read_file(path: str) -> list[str]:
+    """Read the config file's lines; raise ConfigFileError if it's missing or unreadable."""
     try:
         with open(path) as file: #encoding eklenmeli mi
             lines = file.read().splitlines()
@@ -39,6 +42,7 @@ def read_file(path: str) -> list[str]:
     
 
 def parse_line(lines: list[str]) -> dict[str, str]:
+    """Parse KEY=VALUE lines into a dict, skipping comments and blank lines."""
     raw_data = {}
     for line in lines:
         line = line.strip()
@@ -62,6 +66,7 @@ def parse_line(lines: list[str]) -> dict[str, str]:
 
 
 def key(raw_data: dict[str, str]) -> None:
+    """Check that every required key is present and no unknown key was given."""
     required_keys = [
         "WIDTH",
         "HEIGHT",
@@ -80,6 +85,7 @@ def key(raw_data: dict[str, str]) -> None:
 
 
 def build_config(raw_data: dict[str, str]) -> Config:
+     """Validate and convert the raw string values into a typed Config object."""
     try:
         width = int(raw_data["WIDTH"])
     except ValueError:

@@ -5,25 +5,26 @@ EXIT_COLOR = "\033[1;91m"
 PATH_COLOR =  "\033[38;2;219;112;147m"
 
 BOX_CHARS = {
-    0: "■",   # Tek başına duran duvar
-    1: "┃",   # üst
-    2: "╺",   # Sağ
-    3: "┗",   # üst ve sağ
-    4: "┃",   # alt
-    5: "┃",   # üst ve alt
-    6: "┏",   # sağ ve alt
-    7: "┣",   # üst sağ ve alt 
-    8: "╸",   # sadece sol
-    9: "┛",   # üst sol
-    10: "━",  # sağ sol birlikte
-    11: "┻",  # üst sağ sol
-    12: "┓",  # alt sol
-    13: "┫",  # üst + alt + sol
-    14: "┳",  # alt + sağ + sol
-    15: "╋"   # hepsi
+    0: "■",
+    1: "┃",   # top
+    2: "╺",   # right
+    3: "┗",   # top and right
+    4: "┃",   # bottom
+    5: "┃",   # top and bottom
+    6: "┏",   # right and bottom
+    7: "┣",   # top, right and bottom
+    8: "╸",   # left
+    9: "┛",   # top and left
+    10: "━",  # right and left together
+    11: "┻",  # top, right, and left
+    12: "┓",  # bottom and left
+    13: "┫",  # top + bottom + left
+    14: "┳",  # bottom + right + left
+    15: "╋"   # all
 }
 
-def get_wall_mask(maze, row, col):
+def get_wall_mask(maze: list[list[int | str]], row: int, col: int) -> int:
+    """Compute the bitmask (from neighbouring wall cells) that selects the right box-drawing character."""
     mask = 0
     if row > 0 and maze[row - 1][col] in (1, 2):
         mask += 1
@@ -39,7 +40,10 @@ def get_wall_mask(maze, row, col):
     
     return mask
 
-def render_box_maze(maze, current_wall_color=WALL_COLOR):
+def render_box_maze(
+    maze: list[list[int | str]], current_wall_color: str = WALL_COLOR
+) -> None:
+"""Print the character grid to the terminal using box-drawing characters and colors for walls/entry/exit/path."""
     for r, row in enumerate(maze):
         for c, cell in enumerate(row):
             if cell in (1, 2):

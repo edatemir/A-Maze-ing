@@ -2,6 +2,7 @@ from maze.maze import Maze
 from maze.cell import Cell
 
 def convert_maze_to_grid(maze: Maze) -> list[list]:
+    """Build the character grid used for rendering: walls, blocked cells, entry ('S') and exit ('E')."""
     rows = 2 * maze.height + 1
     cols = 2 * maze.width + 1
 
@@ -30,6 +31,7 @@ def convert_maze_to_grid(maze: Maze) -> list[list]:
     return grid
 
 def get_hex_char(cell: Cell) -> str:
+    """Encode a cell's four walls (N/E/S/W) into the single hex digit used in the output file."""
     value = 0
     if cell.walls["N"]:
         value += 1
@@ -43,6 +45,7 @@ def get_hex_char(cell: Cell) -> str:
     return f"{value:X}"
 
 def generate_hex_content(maze: Maze) -> list[str]:
+    """Return the maze as one hex-encoded wall string per row, ready to write to the output file."""
     lines = []
     for y in range(maze.height):
         row_chars = []
@@ -55,6 +58,7 @@ def generate_hex_content(maze: Maze) -> list[str]:
     return lines
 
 def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
+    """Convert a list of (x, y) path coordinates into a string of N/E/S/W compass letters."""
     if not path or len(path) < 2:
         return ""
 
@@ -70,6 +74,7 @@ def convert_path_to_directions(path: list[tuple[int, int]]) -> str:
     return "".join(directions)
 
 def overlay_path_on_grid(grid, path):
+    """Mark the solver's path cells and the walls it crosses on the render grid with '.'."""
     if not path or len(path) < 2:
         return grid
         

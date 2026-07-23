@@ -3,12 +3,17 @@ MAIN = a_maze_ing.py
 CONFIG = config.txt
 OUTPUT = maze.txt
 
-.PHONY: install run debug clean lint lint-strict fclean re all
+.PHONY: install run debug clean lint lint-strict fclean re all package
 
 all: run
 
 install:
 	pip install flake8 mypy build
+
+package:
+	$(PYTHON) -m build
+	cp dist/*.whl dist/*.tar.gz .
+	@rm -rf build/ dist/ *.egg-info
 
 run:
 	$(PYTHON) $(MAIN) $(CONFIG)
