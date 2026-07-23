@@ -1,16 +1,23 @@
 
 from maze.cell import Cell
 
+
 class Maze:
     """The maze grid of cells, plus its entry and exit positions."""
-    def __init__(self, width: int, height: int, entry: tuple[int, int], exit: tuple[int, int]) -> None:
-        """Build a grid of the given size, made of cells with all walls closed."""
+    def __init__(
+            self,
+            width: int,
+            height: int,
+            entry: tuple[int, int],
+            exit: tuple[int, int]
+            ) -> None:
+        """Build a grid of the given size, made of cells with all walls
+          closed."""
         self.width = width
         self.height = height
         self.entry = entry
         self.exit = exit
         self.grid = self._create_grid()
-
 
     def _create_grid(self) -> list[list[Cell]]:
         """Create a width x height grid of default Cell instances."""
@@ -21,20 +28,17 @@ class Maze:
                 row.append(Cell(x, y))
             grid.append(row)
         return grid
-    
 
     def inside(self, x: int, y: int) -> bool:
-         """Return whether (x, y) lies within the maze bounds."""
+        """Return whether (x, y) lies within the maze bounds."""
         if x >= 0 and x < self.width and y >= 0 and y < self.height:
             return True
         return False
-    
 
     def get_cell(self, x: int, y: int) -> Cell:
         """Return the cell at (x, y)."""
         cell = self.grid[y][x]
         return cell
-    
 
     def get_neighbors(self, cell: Cell) -> list[Cell]:
         """Return the in-bounds neighbours (N/E/S/W) of a cell."""
@@ -46,7 +50,7 @@ class Maze:
         ny = y - 1
         if self.inside(nx, ny):
             neighbors.append(self.get_cell(nx, ny))
-        
+
         ex = x + 1
         ey = y
         if self.inside(ex, ey):
@@ -79,7 +83,6 @@ class Maze:
             cell2.walls["S"] = False
         else:
             raise ValueError("Cells are not adjacent.")
-
 
     def has_wall(self, cell1: Cell, cell2: Cell) -> bool:
         """Return whether a wall still stands between two adjacent cells."""

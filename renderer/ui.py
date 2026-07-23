@@ -2,7 +2,7 @@ RESET = "\033[0m"
 WALL_COLOR = "\033[38;2;168;228;160m"
 ENTRY_COLOR = "\033[1;92m"
 EXIT_COLOR = "\033[1;91m"
-PATH_COLOR =  "\033[38;2;219;112;147m"
+PATH_COLOR = "\033[38;2;219;112;147m"
 
 BOX_CHARS = {
     0: "■",
@@ -23,8 +23,10 @@ BOX_CHARS = {
     15: "╋"   # all
 }
 
+
 def get_wall_mask(maze: list[list[int | str]], row: int, col: int) -> int:
-    """Compute the bitmask (from neighbouring wall cells) that selects the right box-drawing character."""
+    """Compute the bitmask (from neighbouring wall cells) that selects the
+      right box-drawing character."""
     mask = 0
     if row > 0 and maze[row - 1][col] in (1, 2):
         mask += 1
@@ -37,13 +39,15 @@ def get_wall_mask(maze: list[list[int | str]], row: int, col: int) -> int:
 
     if col > 0 and maze[row][col - 1] in (1, 2):
         mask += 8
-    
+
     return mask
+
 
 def render_box_maze(
     maze: list[list[int | str]], current_wall_color: str = WALL_COLOR
 ) -> None:
-"""Print the character grid to the terminal using box-drawing characters and colors for walls/entry/exit/path."""
+    """Print the character grid to the terminal using box-drawing characters
+      and colors for walls/entry/exit/path."""
     for r, row in enumerate(maze):
         for c, cell in enumerate(row):
             if cell in (1, 2):
@@ -55,8 +59,11 @@ def render_box_maze(
                 else:
                     connect_east = " "
 
-                print(f"{current_wall_color}{box_char}{connect_east}{RESET}", end="")
-            
+                print(
+                    f"{current_wall_color}{box_char}{connect_east}{RESET}",
+                    end="",
+                    )
+
             elif cell == 'S':
                 print(f"{ENTRY_COLOR}S {RESET}", end="")
             elif cell == 'E':

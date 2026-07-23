@@ -5,13 +5,14 @@ from maze.exceptions import (
     ConfigMissingKeyError,
     ConfigValueError,
     ConfigValidationError,
-    ) 
+    )
 
 from dataclasses import dataclass
 
+
 @dataclass
 class Config:
-     """All settings parsed from the config file, needed to generate a maze."""
+    """All settings parsed from the config file, needed to generate a maze."""
     width: int
     height: int
     entry: tuple[int, int]
@@ -30,7 +31,8 @@ def parse_config(path: str) -> Config:
 
 
 def read_file(path: str) -> list[str]:
-    """Read the config file's lines; raise ConfigFileError if it's missing or unreadable."""
+    """Read the config file's lines; raise ConfigFileError
+      if it's missing or unreadable."""
     try:
         with open(path) as file: #encoding eklenmeli mi
             lines = file.read().splitlines()
@@ -39,7 +41,7 @@ def read_file(path: str) -> list[str]:
         raise ConfigFileError(f"Config file '{path}' not found.") from error
     except PermissionError as error:
         raise ConfigFileError(f"Unable to read '{path}' file.") from error
-    
+
 
 def parse_line(lines: list[str]) -> dict[str, str]:
     """Parse KEY=VALUE lines into a dict, skipping comments and blank lines."""
@@ -51,22 +53,23 @@ def parse_line(lines: list[str]) -> dict[str, str]:
         if line.startswith("#"):
             continue
         if line.count("=") != 1:
-            raise ConfigSyntaxError(f"Syntax Error")
+            raise ConfigSyntaxError("Syntax Error")
         key, value = line.split("=")
         key = key.strip().upper()
         value = value.strip()
         if key == "":
-            raise ConfigSyntaxError(f"Syntax Error")
+            raise ConfigSyntaxError("Syntax Error")
         if key in raw_data:
-            raise ConfigSyntaxError(f"Syntax Error")
+            raise ConfigSyntaxError("Syntax Error")
         if value == "":
-            raise ConfigSyntaxError(f"Syntax Error")
+            raise ConfigSyntaxError("Syntax Error")
         raw_data[key] = value
     return raw_data
 
 
 def key(raw_data: dict[str, str]) -> None:
-    """Check that every required key is present and no unknown key was given."""
+    """Check that every required key is present and no unknown
+      key was given."""
     required_keys = [
         "WIDTH",
         "HEIGHT",
@@ -85,46 +88,47 @@ def key(raw_data: dict[str, str]) -> None:
 
 
 def build_config(raw_data: dict[str, str]) -> Config:
-     """Validate and convert the raw string values into a typed Config object."""
+    """Validate and convert the raw string values into a typed
+      Config object."""
     try:
         width = int(raw_data["WIDTH"])
     except ValueError:
-        raise ConfigValueError(f"Width must be a number")
+        raise ConfigValueError("Width must be a number")
     if width <= 0:
-        raise ConfigValidationError(f"Width must be greater than 0")
-    
+        raise ConfigValidationError("Width must be greater than 0")
+
     try:
         height = int(raw_data["HEIGHT"])
     except ValueError:
-        raise ConfigValueError(f"Height must be a number")
+        raise ConfigValueError("Height must be a number")
     if height <= 0:
-        raise ConfigValidationError(f"Height must be greater than 0")
-    
+        raise ConfigValidationError("Height must be greater than 0")
+
     parts = raw_data["ENTRY"].split(",")
     if len(parts) != 2:
-        raise ConfigSyntaxError(f"Entry must be in x,y format")
+        raise ConfigSyntaxError("Entry must be in x,y format")
     try:
         x = int(parts[0])
     except ValueError:
-        raise ConfigValueError(f"Entry x must be a number")
+        raise ConfigValueError("Entry x must be a number")
     try:
         y = int(parts[1])
     except ValueError:
-        raise ConfigValueError(f"Entry y must be a number")
-    entry = (x,y)
+        raise ConfigValueError("Entry y must be a number")
+    entry = (x, y)
 
     coordinates = raw_data["EXIT"].split(",")
     if len(coordinates) != 2:
-        raise ConfigSyntaxError(f"Exit must be in x,y format")
+        raise ConfigSyntaxError("Exit must be in x,y format")
     try:
         x_exit = int(coordinates[0])
     except ValueError:
-        raise ConfigValueError(f"Exit x must be a number")
+        raise ConfigValueError("Exit x must be a number")
     try:
         y_exit = int(coordinates[1])
     except ValueError:
-        raise ConfigValueError(f"Exit y must be a number")
-    exit = (x_exit,y_exit)
+        raise ConfigValueError("Exit y must be a number")
+    exit = (x_exit, y_exit)
 
     output_file = raw_data["OUTPUT_FILE"]
 
@@ -134,29 +138,31 @@ def build_config(raw_data: dict[str, str]) -> Config:
     elif perfect_value == "false":
         perfect = False
     else:
-        raise ConfigValueError(f"Perfect must be bool")
-    
+        raise ConfigValueError("Perfect must be bool")
+
     if "SEED" in raw_data:
         try:
             seed = int(raw_data["SEED"])
         except ValueError:
-            raise ConfigValueError(f"Seed must be an integer")
+            raise ConfigValueError("Seed must be an integer")
     else:
         seed = None
 
     if x < 0 or x >= width:
-        raise ConfigValidationError(f"Entry x is outside the maze boundaries.")
+        raise ConfigValidationError("Entry x is outside the maze boundaries.")
     if y < 0 or y >= height:
-        raise ConfigValidationError(f"Entry y is outside the maze boundaries.")
-    
+        raise ConfigValidationError("Entry y is outside the maze boundaries.")
+
     if x_exit < 0 or x_exit >= width:
-        raise ConfigValidationError(f"Exit x is outside the maze boundaries.")
+        raise ConfigValidationError("Exit x is outside the maze boundaries.")
     if y_exit < 0 or y_exit >= height:
-        raise ConfigValidationError(f"Exit y is outside the maze boundaries.")
-    
+        raise ConfigValidationError("Exit y is outside the maze boundaries.")
+
     if entry == exit:
-        raise ConfigValidationError(f"Entry and Exit cannot be the same position")
-    
+        raise ConfigValidationError(
+            "Entry and Exit cannot be the sameposition"
+            )
+
     return Config(
         width=width,
         height=height,

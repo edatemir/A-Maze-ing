@@ -5,6 +5,7 @@ from maze.cell import Cell
 from maze.exceptions import MazeGenerationError
 import random
 
+
 class MazeGenerator:
     """Builds a maze from a Config using a DFS-based wall-carving algorithm."""
     PATTERN_42 = (
@@ -14,31 +15,32 @@ class MazeGenerator:
         "0010100",
         "0010111",
     )
-    
 
-    def __init__(self, config: Config)-> None:
-        """Create an empty Maze from the config and set up a seeded random generator."""
+    def __init__(self, config: Config) -> None:
+        """Create an empty Maze from the config and set up a seeded
+          random generator."""
         self.config = config
         self.maze = Maze(
-            width = config.width,
-            height = config.height,
-            entry = config.entry,
-            exit = config.exit,
+            width=config.width,
+            height=config.height,
+            entry=config.entry,
+            exit=config.exit,
         )
         self.rnd = random.Random(config.seed)
 
-
     def pattern(self) -> None:
-         """Stamp the '42' pattern as blocked cells in the centre of the grid; skip it if it doesn't fit or overlaps entry/exit."""
+        """Stamp the '42' pattern as blocked cells in the centre of the grid;
+          skip it if it doesn't fit or overlaps entry/exit."""
         pattern_height = len(self.PATTERN_42)
         pattern_width = len(self.PATTERN_42[0])
 
         if (
-            self.config.width < pattern_width or self.config.height < pattern_height
+            self.config.width < pattern_width
+            or self.config.height < pattern_height
         ):
             print("Maze is too small for 42 pattern")
             return
-        
+
         start_x = (self.config.width - pattern_width) // 2
         start_y = (self.config.height - pattern_height) // 2
 
@@ -76,26 +78,28 @@ class MazeGenerator:
                     return
 
         for pattern_y, row in enumerate(self.PATTERN_42):
-                for pattern_x, value in enumerate(row):
-                    if value != "1":
-                        continue
-                    maze_x = start_x + pattern_x
-                    maze_y = start_y + pattern_y
+            for pattern_x, value in enumerate(row):
+                if value != "1":
+                    continue
+                maze_x = start_x + pattern_x
+                maze_y = start_y + pattern_y
 
-                    cell = self.maze.get_cell(maze_x, maze_y)
-                    cell.blocked = True
-
+                cell = self.maze.get_cell(maze_x, maze_y)
+                cell.blocked = True
 
     def validate_connectivity(self) -> None:
-        """Check that every non-'42' cell was visited during carving; raise an error otherwise."""
+        """Check that every non-'42' cell was visited during carving;
+          raise an error otherwise."""
         for row in self.maze.grid:
             for cell in row:
                 if not cell.blocked and not cell.visited:
-                    raise MazeGenerationError("The 42 pattern disconnects part of the maze.")
-
+                    raise MazeGenerationError(
+                        "The 42 pattern disconnects part of the maze."
+                        )
 
     def dead_end(self, cell: Cell) -> bool:
-        """Return whether a cell has exactly one open passage, i.e. is a dead end."""
+        """Return whether a cell has exactly one open passage,
+          i.e. is a dead end."""
         open_path = 0
         for neighbor in self.maze.get_neighbors(cell):
             if neighbor.blocked:
@@ -104,9 +108,9 @@ class MazeGenerator:
                 open_path += 1
         return open_path == 1
 
-
     def loop(self) -> None:
-        """In PERFECT=False mode, remove random walls to cut dead ends and add at least two loops."""
+        """In PERFECT=False mode, remove random walls to cut dead ends
+          and add at least two loops."""
         loops = 0
         max_dead_end = 2
         while True:
@@ -122,7 +126,7 @@ class MazeGenerator:
             self.rnd.shuffle(dead_end)
             wall_removed = False
             for cell in dead_end:
-                candidates= []
+                candidates = []
                 for neighbor in self.maze.get_neighbors(cell):
                     if neighbor.blocked:
                         continue
@@ -140,11 +144,13 @@ class MazeGenerator:
             if not wall_removed:
                 break
         if loops < 2:
-            raise MazeGenerationError("Unable to create at least two loops in the maze.")
-
+            raise MazeGenerationError(
+                "Unable to create at least two loops in the maze."
+                )
 
     def generator(self) -> Maze:
-         """Place the '42' pattern, carve the maze with DFS, add loops if not PERFECT, and return the Maze."""
+        """Place the '42' pattern, carve the maze with DFS, add loops
+          if not PERFECT, and return the Maze."""
         self.pattern()
 
         x, y = self.config.entry
